@@ -36,7 +36,7 @@ export default class Rain extends Component {
 					wave, {
 						toValue: 1,
 						duration: 1000,
-						easing: Easing.linear
+						easing: Easing.ease
 					}
 				)
 			})

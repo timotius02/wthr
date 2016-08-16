@@ -41,9 +41,9 @@ class weather extends Component {
       eveningInfo: new Animated.Value(-80),
       nightInfo: new Animated.Value(-80),
       morningWeather: new Animated.Value(0),
-      afternoonWeather: new Animated.Value(-300),
-      eveningWeather: new Animated.Value(-300),
-      nightWeather: new Animated.Value(-300)
+      afternoonWeather: new Animated.Value(-350),
+      eveningWeather: new Animated.Value(-350),
+      nightWeather: new Animated.Value(-350)
     }
 
     this.render.bind(this);
@@ -150,7 +150,7 @@ class weather extends Component {
             <View style={styles[time]}>
               <View style={styles.halfView}>
                 <Animated.View style={{top: this.state[time + 'Weather']}}>
-                  <Snow  />              
+                  {time === this.state.selected? <Snow  /> : null } 
                 </Animated.View>
 
               </View>

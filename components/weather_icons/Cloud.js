@@ -14,15 +14,15 @@ export default Cloud = ({ style }) => {
 	const cloudStyle = [styles.cloud, style];
 	return (
 		<Animated.Text style={ cloudStyle }> 
-      {icon('cloud')}
-  	</Animated.Text>
+    		{icon('cloud')}
+  		</Animated.Text>
 	)
 }
 
 const styles = StyleSheet.create({
-  cloud: {
-  	fontSize: 110,
+  	cloud: {
+  		fontSize: 110,
 		color: '#fff',
-	  fontFamily: 'weathericons'
+ 		fontFamily: 'weathericons'
 	}
 }) 
