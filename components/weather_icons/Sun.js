@@ -14,50 +14,60 @@ export default class Sun extends Component {
 		super(props);
 
 		this.state = {
+			top: new Animated.Value(-170),
 			rotateValue: new Animated.Value(0)
 		}
 	}
 
 	componentDidMount() {
-		var rotateSun = () => {
-      this.state.rotateValue.setValue(0);
+		Animated.timing(
+			this.state.top, {
+          		toValue: 10,
+				duration: 250,
+          		easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+			}
+		).start();
 
-      Animated.timing(
-        this.state.rotateValue, {
-          toValue: 1,
-          duration: 3000,
-          easing: Easing.linear
-        }
-      ).start(() => {
-        rotateSun();
-      })
-    }
-    rotateSun();
+		var rotateSun = () => {
+	     	this.state.rotateValue.setValue(0);
+
+	    	Animated.timing(
+		        this.state.rotateValue, {
+		        	toValue: 1,
+		        	duration: 3000,
+		        	easing: Easing.linear
+		        }
+		    ).start(() => {
+	     		rotateSun();
+	      	})
+    	}
+    	rotateSun();
 	}
 
 	render() {
 		const rotate = this.state.rotateValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '360deg']
-    });
+    		inputRange: [0, 1],
+    		outputRange: ['0deg', '360deg']
+    	});
 		
 		const { style} = this.props;
-		const sunStyle = [styles.sun, style, { transform: [{ rotate }]}];
+		const { top } = this.state;
+		const sunStyle = [styles.sun, style, { top, transform: [{ rotate }]}];
 
 		return (
 			<Animated.Text style={ sunStyle }> 
-        {icon('day-sunny')}
-    	</Animated.Text>
+        		{icon('day-sunny')}
+    		</Animated.Text>
 		)
 	}
 }
 
 
 const styles = StyleSheet.create({
-  sun: {
-  	fontSize: 70,
+  	sun: {
+ 		fontSize: 70,
 		color: '#fff',
-	  fontFamily: 'weathericons',
-	  position: 'absolute'
+		fontFamily: 'weathericons',
+		position: 'absolute'
 	}
 }) 

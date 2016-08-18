@@ -40,7 +40,7 @@ class weather extends Component {
       afternoonInfo: new Animated.Value(-80),
       eveningInfo: new Animated.Value(-80),
       nightInfo: new Animated.Value(-80),
-      morningWeather: new Animated.Value(0),
+      morningWeather: new Animated.Value(-10),
       afternoonWeather: new Animated.Value(-350),
       eveningWeather: new Animated.Value(-350),
       nightWeather: new Animated.Value(-350)
@@ -74,7 +74,7 @@ class weather extends Component {
     //);
   }
   _onPressTime(timeSelected) {
-    if (this.state.animating)
+    if (this.state.animating || this.state.selected === timeSelected)
       return 
 
     this.state.animating = true;
@@ -110,25 +110,25 @@ class weather extends Component {
       ),
       Animated.timing(
         this.state[this.state.selected + 'Weather'], {
-          toValue: -300,
+          toValue: -350,
           duration: 500,
           easing: Easing.bezier(0.645, 0.045, 0.355, 1)
         }
       ),
       Animated.timing(
         this.state[timeSelected + 'Weather'], {
-          toValue: 0,
-
+          toValue: -10,
           duration: 500,
           easing: Easing.bezier(0.645, 0.045, 0.355, 1)
         }
       )
     ]).start(() => {
-      this.setState({ 
+          this.setState({ 
         animating: false, 
         selected: timeSelected 
       })
     });
+
 
 
   }
@@ -140,6 +140,10 @@ class weather extends Component {
   
       const infoStyle = [styles.hiddenText, {bottom: this.state[time + 'Info']}];
 
+      const isSelected = this.state.selected === time;
+
+      const weathers = [<Cloud style={{left: 40}}/>, <Sun />, <Rain />, <Snow />];
+      const weather = weathers[Math.floor(Math.random() * 4)];
       return (
         <Animated.View 
           key={time}
@@ -150,7 +154,7 @@ class weather extends Component {
             <View style={styles[time]}>
               <View style={styles.halfView}>
                 <Animated.View style={{top: this.state[time + 'Weather']}}>
-                  {time === this.state.selected? <Snow  /> : null } 
+                  { isSelected ? weather : null}
                 </Animated.View>
 
               </View>

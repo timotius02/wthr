@@ -42,6 +42,7 @@ export default class Snow extends Component {
 		}
 
 		this.state = {
+			top: new Animated.Value(-170),
 			snow
 		}
 
@@ -49,15 +50,23 @@ export default class Snow extends Component {
 	}
 	componentDidMount() {
 		this._mounted = true;
-		const animate = () => {
 
+		Animated.timing(
+			this.state.top, {
+          		toValue: 0,
+				duration: 250,
+          		easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+			}
+		).start();
+
+		const animate = () => {
 
 			const animations = this.state.snow.reduce((prev, snowFlake) => {
 				return prev.concat([
 					Animated.parallel([
 						Animated.timing(
 							snowFlake.translateY, {
-								toValue: 130,
+								toValue: 140,
 								duration: 3100,
 								easing: Easing.linear
 							}
@@ -66,28 +75,28 @@ export default class Snow extends Component {
 							Animated.timing(
 								snowFlake.translateX, {
 									toValue: -20,
-									duration: 500,
+									duration: 400,
 									easing: Easing.linear
 								}
 							),
 							Animated.timing(
 								snowFlake.translateX, {
 									toValue: 20,
-									duration: 1000,
+									duration: 800,
 									easing: Easing.linear
 								}
 							),
 							Animated.timing(
 								snowFlake.translateX, {
 									toValue: -20,
-									duration: 1000,
+									duration: 800,
 									easing: Easing.linear
 								}
 							),
 							Animated.timing(
 								snowFlake.translateX, {
 									toValue: 10,
-									duration: 500,
+									duration: 400,
 									easing: Easing.linear
 								}
 							)
@@ -95,7 +104,7 @@ export default class Snow extends Component {
 					])
 				])
 			}, []); 
-
+			
 			Animated.stagger(randRange(100, 500), animations).start(() => {
 				 snow  = [];
 
@@ -123,6 +132,8 @@ export default class Snow extends Component {
 
 	componentWillUnmount() {
 		this._mounted = false;
+
+
 	}
 	
 	render() {
@@ -142,10 +153,11 @@ export default class Snow extends Component {
 
 
 		return (
-			<View>
+			<Animated.View style={{top: this.state.top}}>
 				<Cloud style={{left: 40}}/>
+
 				{ snowWaves }
-			</View>
+			</Animated.View>
 		)
 	}
 }
@@ -156,5 +168,6 @@ const styles = StyleSheet.create({
 		fontSize: 40,
 		color: '#fff',
 	 	fontFamily: 'weathericons',
+
 	}
 }) 

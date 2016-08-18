@@ -16,11 +16,8 @@ export default class Rain extends Component {
 		super(props);
 		
 		this.state = {
+			top: new Animated.Value(-170),
 			waves: [
-				new Animated.Value(0), 
-				new Animated.Value(0), 
-				new Animated.Value(0), 
-				new Animated.Value(0), 
 				new Animated.Value(0), 
 				new Animated.Value(0), 
 				new Animated.Value(0), 
@@ -30,6 +27,15 @@ export default class Rain extends Component {
 	}
 
 	componentDidMount() {
+
+		Animated.timing(
+			this.state.top, {
+          		toValue: 0,
+				duration: 250,
+          		easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+			}
+		).start();
+
 		const animate = () => {
 			const animations = this.state.waves.map((wave) => {
 				return Animated.timing(
@@ -52,12 +58,13 @@ export default class Rain extends Component {
 
 	render() {
 		const { style } = this.props;
-		const rainStyle = [styles.raindrops, style]
+		const rainStyle = [styles.raindrops, style];
+		const { top, waves } = this.state;
 
-		const rainWaves = this.state.waves.map((waves, index) => {
-			const right = waves.interpolate({inputRange: [0, 1], outputRange: [25, 70] });
-			const bottom = waves.interpolate({inputRange: [0, 1], outputRange: [-15, -105]});
-			const opacity = waves.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
+		const rainWaves = waves.map((wave, index) => {
+			const right = wave.interpolate({inputRange: [0, 1], outputRange: [25, 70] });
+			const bottom = wave.interpolate({inputRange: [0, 1], outputRange: [-15, -105]});
+			const opacity = wave.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
 
 			return (
 					<Animated.Text key={index} style={[rainStyle, { right, bottom, opacity}]}>
@@ -67,10 +74,10 @@ export default class Rain extends Component {
 		})
 
 		return (
-			<View >
+			<Animated.View style={{top}}>
 				<Cloud style={{left: 40}}/>
 				{rainWaves}
-			</View>
+			</Animated.View>
 		)
 	}
 }
