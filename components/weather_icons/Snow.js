@@ -11,12 +11,11 @@ import Cloud from './Cloud';
 
 const icon = require('react-native-iconic-font/weathericons');
 
-const leftMin = 15;
+const leftMin = 45;
 const leftMax = 120;
 
-const topMin = 95;
-const topMax = 120
-const animDist = 130;
+const topMin = 100;
+const topMax = 200;
 
 const flakeAmount = 5;
 
@@ -34,15 +33,15 @@ export default class Snow extends Component {
 			const leftOrigin = randRange(leftMin, leftMax);
 
 			snow.push({
-				left: randRange(leftMin, leftMax),
-				top: randRange(topMin, topMax),
+				left: new Animated.Value(randRange(leftMin, leftMax)),
+				top: new Animated.Value(randRange(topMin, topMax)),
 				translateX: new Animated.Value(0),
 				translateY: new Animated.Value(0)
 			})
 		}
 
 		this.state = {
-			top: new Animated.Value(-170),
+			top: new Animated.Value(0),
 			snow
 		}
 
@@ -51,83 +50,69 @@ export default class Snow extends Component {
 	componentDidMount() {
 		this._mounted = true;
 
-		Animated.timing(
-			this.state.top, {
-          		toValue: 0,
-				duration: 250,
-          		easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-			}
-		).start();
+		let delay = 0;
 
-		const animate = () => {
-
-			const animations = this.state.snow.reduce((prev, snowFlake) => {
-				return prev.concat([
-					Animated.parallel([
+		this.state.snow.forEach((snowFlake) => {
+			const animate = () => {
+				const direction = Math.random() > 0.5? 1 : -1;
+				Animated.parallel([
+					Animated.timing(
+						snowFlake.translateY, {
+							toValue: 140,
+							duration: randRange(2500, 3100),
+							easing: Easing.linear
+						}
+					),
+					Animated.sequence([
 						Animated.timing(
-							snowFlake.translateY, {
-								toValue: 140,
-								duration: 3100,
+							snowFlake.translateX, {
+								toValue: -20 * direction,
+								duration: 400,
 								easing: Easing.linear
 							}
 						),
-						Animated.sequence([
-							Animated.timing(
-								snowFlake.translateX, {
-									toValue: -20,
-									duration: 400,
-									easing: Easing.linear
-								}
-							),
-							Animated.timing(
-								snowFlake.translateX, {
-									toValue: 20,
-									duration: 800,
-									easing: Easing.linear
-								}
-							),
-							Animated.timing(
-								snowFlake.translateX, {
-									toValue: -20,
-									duration: 800,
-									easing: Easing.linear
-								}
-							),
-							Animated.timing(
-								snowFlake.translateX, {
-									toValue: 10,
-									duration: 400,
-									easing: Easing.linear
-								}
-							)
-						])
+						Animated.timing(
+							snowFlake.translateX, {
+								toValue: 20 * direction,
+								duration: 800,
+								easing: Easing.linear
+							}
+						),
+						Animated.timing(
+							snowFlake.translateX, {
+								toValue: -20 * direction,
+								duration: 800,
+								easing: Easing.linear
+							}
+						),
+						Animated.timing(
+							snowFlake.translateX, {
+								toValue: 10 * direction,
+								duration: 400,
+								easing: Easing.linear
+							}
+						)
 					])
-				])
-			}, []); 
+				]).start(() => {
+					setTimeout(() => {
+						snowFlake.translateY.setValue(0);
+						snowFlake.left.setValue(randRange(leftMin, leftMax));
+						snowFlake.top.setValue(100);
+						
+						animate()
+					}, delay)
+					delay += 300;
+					if (delay > 1200) 
+						delay = 0;
+
+				})
+			}
 			
-			Animated.stagger(randRange(100, 500), animations).start(() => {
-				 snow  = [];
+			animate()
 
-				for (let i = 0; i < flakeAmount; i++) {
-					const leftOrigin = randRange(leftMin, leftMax);
+		})	
 
-					snow.push({
-						left: randRange(leftMin, leftMax),
-						top: randRange(topMin, topMax),
-						translateX: new Animated.Value(0),
-						translateY: new Animated.Value(0)
-					})
-				}
-				
-
-				if (this._mounted) {
-					this.setState({ snow });
-					animate();
-				}
-			})
-		}
-
-		animate()
+		
 	}
 
 	componentWillUnmount() {
@@ -150,7 +135,6 @@ export default class Snow extends Component {
 				</Animated.Text>
 			)
 		})
-
 
 		return (
 			<Animated.View style={{top: this.state.top}}>

@@ -13,7 +13,8 @@ import {
   UIManager,
   Animated,
   Easing,
-  TouchableNativeFeedback
+  TouchableNativeFeedback,
+  LayoutAnimation
 } from 'react-native';
 
 import { Sun, Cloud, Rain, Snow} from './components/weather_icons/';
@@ -31,15 +32,10 @@ class weather extends Component {
     super(props);
     this.state = { 
       selected: 'morning',
-      animating: false,
-      morningHeight: new Animated.Value(8),
-      afternoonHeight: new Animated.Value(3),
-      eveningHeight: new Animated.Value(3),
-      nightHeight: new Animated.Value(3),
-      morningInfo: new Animated.Value(70),
-      afternoonInfo: new Animated.Value(-80),
-      eveningInfo: new Animated.Value(-80),
-      nightInfo: new Animated.Value(-80),
+      morningInfo: new Animated.Value(0),
+      afternoonInfo: new Animated.Value(-180),
+      eveningInfo: new Animated.Value(-180),
+      nightInfo: new Animated.Value(-180),
       morningWeather: new Animated.Value(-10),
       afternoonWeather: new Animated.Value(-350),
       eveningWeather: new Animated.Value(-350),
@@ -74,94 +70,92 @@ class weather extends Component {
     //);
   }
   _onPressTime(timeSelected) {
-    if (this.state.animating || this.state.selected === timeSelected)
+    if (this.state.selected === timeSelected)
       return 
 
-    this.state.animating = true;
+    const prevSelected = this.state.selected;
+    
     Animated.parallel([
       Animated.timing(
-        this.state[this.state.selected + 'Height'], {
-          toValue: 3,
-          duration: 500,
-          easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-        }
-      ),
-      Animated.timing(
-        this.state[timeSelected + 'Height'], {
-          toValue: 8,
-          duration: 500,
-          easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-        }
-      ),
-      Animated.timing(
-        this.state[this.state.selected + 'Info'], {
-          toValue: -80,
+        this.state[prevSelected + 'Info'], {
+          toValue: -180,
           duration: 200,
           easing: Easing.bezier(0.645, 0.045, 0.355, 1)
         }
       ),
       Animated.timing(
-        this.state[timeSelected + 'Info'], {
-          toValue: 70,
-          delay: 200,
-          duration: 500,
-          easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-        }
-      ),
-      Animated.timing(
-        this.state[this.state.selected + 'Weather'], {
+        this.state[prevSelected + 'Weather'], {
           toValue: -350,
-          duration: 500,
+          duration: 200,
           easing: Easing.bezier(0.645, 0.045, 0.355, 1)
         }
       ),
-      Animated.timing(
-        this.state[timeSelected + 'Weather'], {
-          toValue: -10,
-          duration: 500,
-          easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-        }
-      )
     ]).start(() => {
-          this.setState({ 
-        animating: false, 
+      const config = LayoutAnimation.create(250, LayoutAnimation.Types.easeOut, LayoutAnimation.Properties.opacity);
+      LayoutAnimation.configureNext(config);
+      this.setState({ 
         selected: timeSelected 
+      }, () => {
+         Animated.parallel([
+          Animated.timing(
+            this.state[timeSelected + 'Info'], {
+              toValue: 0,
+              delay: 200,
+              duration: 500,
+              easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+            }
+          ),
+          Animated.timing(
+            this.state[timeSelected + 'Weather'], {
+              toValue: -10,
+              duration: 500,
+              easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+            }
+          )
+        ]).start();
       })
-    });
-
-
-
+    }) 
   }
 
   render() {
 
     const timesOfDays = ['morning', 'afternoon', 'evening', 'night'];
     const weatherLayout = timesOfDays.map((time) => {
-  
-      const infoStyle = [styles.hiddenText, {bottom: this.state[time + 'Info']}];
 
       const isSelected = this.state.selected === time;
+      const flex = isSelected? 8 : 3;
 
+      const info = (
+        <Animated.View>
+          <Text style={styles.summary}>Sunny</Text>
+          <Text style={styles.text}>Wind: E 7 mph</Text>
+          <Text style={styles.text}>Humidity: 91%</Text>
+        </Animated.View>
+      );
+
+      // TEMPORARY
       const weathers = [<Cloud style={{left: 40}}/>, <Sun />, <Rain />, <Snow />];
-      const weather = weathers[Math.floor(Math.random() * 4)];
+      const weather = weathers[Math.floor( 3)];
+
       return (
         <Animated.View 
           key={time}
-          style={{flex: this.state[time + 'Height']}}>
+          style={{flex }}>
           <TouchableNativeFeedback 
             onPress={this._onPressTime.bind(this, time)}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={styles[time]}>
+            <View style={[styles[time]]}>
               <View style={styles.halfView}>
                 <Animated.View style={{top: this.state[time + 'Weather']}}>
                   { isSelected ? weather : null}
                 </Animated.View>
-
+  
               </View>
               <View style={styles.halfView}>
                 <Text style={styles.header}>{time.toUpperCase()}</Text>
                 <Text style={styles.degree}>-2&deg;</Text>
-                <Animated.View style={infoStyle}>
+
+                <Animated.View style={{bottom: this.state[time + 'Info']}}>
                   <Text style={styles.summary}>Sunny</Text>
                   <Text style={styles.text}>Wind: E 7 mph</Text>
                   <Text style={styles.text}>Humidity: 91%</Text>
@@ -230,15 +224,13 @@ const styles = StyleSheet.create({
   degree: {
     color: '#fff',
     fontSize: 34,
+    paddingBottom: 10
   },
   summary: {
     paddingBottom: 10,
     color: '#fff',
     fontSize: 28,
     fontWeight: '500'
-  },
-  hiddenText: {
-    position: 'absolute',
   },
   text: {
     color: '#fff',
