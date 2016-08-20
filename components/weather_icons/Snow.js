@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {
 	StyleSheet,
-	Text,
-	View,
 	Animated,
 	Easing
 } from 'react-native';

@@ -17,10 +17,15 @@ import {
   LayoutAnimation
 } from 'react-native';
 
+import { 
+  Sun, 
+  Cloud, 
+  Rain, 
+  Snow
+} from './components/weather_icons/';
+
 const { create, configureNext, Types, Properties } = LayoutAnimation;
 
-import { Sun, Cloud, Rain, Snow} from './components/weather_icons/';
-const icon = require('react-native-iconic-font/weathericons');
 
 UIManager.setLayoutAnimationEnabledExperimental && 
 UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -35,14 +40,10 @@ class weather extends Component {
     super(props);
     this.state = { 
       selected: 'morning',
-      morningInfo: new Animated.Value(0),
-      afternoonInfo: new Animated.Value(-180),
-      eveningInfo: new Animated.Value(-180),
-      nightInfo: new Animated.Value(-180),
-      morningWeather: new Animated.Value(-10),
-      afternoonWeather: new Animated.Value(-350),
-      eveningWeather: new Animated.Value(-350),
-      nightWeather: new Animated.Value(-350)
+      morning: new Animated.Value(1),
+      afternoon: new Animated.Value(0),
+      evening: new Animated.Value(0),
+      night: new Animated.Value(0)
     }
 
     this.render.bind(this);
@@ -80,19 +81,11 @@ class weather extends Component {
     
     Animated.parallel([
       Animated.timing(
-        this.state[prevSelected + 'Info'], {
-          toValue: -180,
+        this.state[prevSelected], {
+          toValue: 0,
           duration: 200,
           easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-        }
-      ),
-      Animated.timing(
-        this.state[prevSelected + 'Weather'], {
-          toValue: -350,
-          duration: 200,
-          easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-        }
-      ),
+        })
     ]).start(() => {
       const config = create(250, Types.easeOut, Properties.opacity);
       configureNext(config);
@@ -101,20 +94,11 @@ class weather extends Component {
       }, () => {
          Animated.parallel([
           Animated.timing(
-            this.state[timeSelected + 'Info'], {
-              toValue: 0,
+            this.state[timeSelected], {
+              toValue: 1,
               delay: 200,
-              duration: 500,
               easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-            }
-          ),
-          Animated.timing(
-            this.state[timeSelected + 'Weather'], {
-              toValue: -10,
-              duration: 500,
-              easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-            }
-          )
+            })
         ]).start();
       })
     }) 
@@ -128,17 +112,23 @@ class weather extends Component {
       const isSelected = this.state.selected === time;
       const flex = isSelected? 8 : 3;
 
-      const info = (
-        <Animated.View>
-          <Text style={styles.summary}>Sunny</Text>
-          <Text style={styles.text}>Wind: E 7 mph</Text>
-          <Text style={styles.text}>Humidity: 91%</Text>
-        </Animated.View>
-      );
-
       // TEMPORARY
       const weathers = [<Cloud style={{left: 40}}/>, <Sun/>, <Rain/>, <Snow/>];
       const weather = weathers[Math.floor( Math.random() * 4)];
+
+      // Weather animation slide down
+      const top = this.state[time].interpolate({
+        inputRange: [0, 1],
+        outputRange: [-350, -10]
+      });
+
+      // weather info slide up
+      const bottom = this.state[time].interpolate({
+        inputRange: [0, 1],
+        outputRange: [-180, 0]
+      });
+
+      const viewStyle = [styles.viewStyleBase, {backgroundColor: color[time]}];
 
       return (
         <Animated.View 
@@ -147,18 +137,17 @@ class weather extends Component {
           <TouchableNativeFeedback 
             onPress={this._onPressTime.bind(this, time)}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={[styles[time]]}>
+            <View style={viewStyle}>
               <View style={styles.halfView}>
-                <Animated.View style={{top: this.state[time + 'Weather']}}>
+                <Animated.View style={{top}}>
                   { isSelected ? weather : null}
                 </Animated.View>
-  
               </View>
               <View style={styles.halfView}>
                 <Text style={styles.header}>{time.toUpperCase()}</Text>
                 <Text style={styles.degree}>-2&deg;</Text>
 
-                <Animated.View style={{bottom: this.state[time + 'Info']}}>
+                <Animated.View style={{bottom}}>
                   <Text style={styles.summary}>Sunny</Text>
                   <Text style={styles.text}>Wind: E 7 mph</Text>
                   <Text style={styles.text}>Humidity: 91%</Text>
@@ -178,41 +167,30 @@ class weather extends Component {
   }
 }
 
-const colorBase = '#8ba892';
-const colorMorning = '#e3bb88';
-const colorAfternoon = '#d89864';
-const colorEvening = '#b1695a';
-const colorNight = '#644749';
-
+const color = {
+  base: '#8ba892',
+  morning: '#e3bb88',
+  afternoon: '#d89864',
+  evening: '#b1695a',
+  night: '#644749'
+}
 
 const viewStyleBase = {
     flexDirection: 'row',
     paddingTop: 16,
-    flex: 1
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: colorBase,
+    backgroundColor: color.base,
     paddingTop: 33
   },
-  morning: {
-    ...viewStyleBase,
-    backgroundColor: colorMorning
-  },
-  afternoon: {
-    ...viewStyleBase,
-    backgroundColor: colorAfternoon
-  },
-  evening: {
-    ...viewStyleBase,
-    backgroundColor: colorEvening
-  },
-  night: {
-    ...viewStyleBase,
-    backgroundColor: colorNight
+  viewStyleBase: {
+      flexDirection: 'row',
+      paddingTop: 16,
+      flex: 1
   },
   halfView: {
     flex: 1,

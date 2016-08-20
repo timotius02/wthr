@@ -58,16 +58,28 @@ export default class Rain extends Component {
 
 	render() {
 		const { style } = this.props;
-		const rainStyle = [styles.raindrops, style];
 		const { top, waves } = this.state;
 
 		const rainWaves = waves.map((wave, index) => {
-			const right = wave.interpolate({inputRange: [0, 1], outputRange: [25, 70] });
-			const bottom = wave.interpolate({inputRange: [0, 1], outputRange: [-15, -105]});
-			const opacity = wave.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
+			const right = wave.interpolate({
+				inputRange: [0, 1], 
+				outputRange: [25, 70] 
+			});
+
+			const bottom = wave.interpolate({
+				inputRange: [0, 1], 
+				outputRange: [-15, -105]
+			});
+
+			const opacity = wave.interpolate({
+				inputRange: [0, 1], 
+				outputRange: [1, 0]
+			});
+
+			const rainStyle = [styles.raindrops, style, {right, bottom, opacity}];
 
 			return (
-				<Animated.Text key={index} style={[rainStyle, { right, bottom, opacity}]}>
+				<Animated.Text key={index} style={rainStyle}>
 					{icon('raindrops').repeat(5)}
 				</Animated.Text>
 			)
@@ -87,6 +99,6 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		fontSize: 45,
 		color: '#fff',
-	 	fontFamily: 'weathericons',
+		fontFamily: 'weathericons',
 	}
 }) 
