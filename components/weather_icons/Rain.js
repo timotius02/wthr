@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {
 	StyleSheet,
-	Text,
-	View,
 	Animated,
 	Easing
 } from 'react-native'
@@ -22,6 +20,8 @@ export default class Rain extends Component {
 				new Animated.Value(0), 
 				new Animated.Value(0), 
 				new Animated.Value(0), 
+				new Animated.Value(0), 
+				new Animated.Value(0), 
 			]
 		}
 	}
@@ -30,9 +30,9 @@ export default class Rain extends Component {
 
 		Animated.timing(
 			this.state.top, {
-          		toValue: 0,
-				duration: 250,
-          		easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+          toValue: 0,
+					duration: 250,
+          easing: Easing.bezier(0.645, 0.045, 0.355, 1)
 			}
 		).start();
 
@@ -67,9 +67,9 @@ export default class Rain extends Component {
 			const opacity = wave.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
 
 			return (
-					<Animated.Text key={index} style={[rainStyle, { right, bottom, opacity}]}>
-						{icon('raindrops').repeat(5)}
-					</Animated.Text>
+				<Animated.Text key={index} style={[rainStyle, { right, bottom, opacity}]}>
+					{icon('raindrops').repeat(5)}
+				</Animated.Text>
 			)
 		})
 

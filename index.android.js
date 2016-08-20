@@ -17,10 +17,13 @@ import {
   LayoutAnimation
 } from 'react-native';
 
+const { create, configureNext, Types, Properties } = LayoutAnimation;
+
 import { Sun, Cloud, Rain, Snow} from './components/weather_icons/';
 const icon = require('react-native-iconic-font/weathericons');
 
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+UIManager.setLayoutAnimationEnabledExperimental && 
+UIManager.setLayoutAnimationEnabledExperimental(true);
 
 var morning = '9am';
 var afternoon = '12pm';
@@ -91,8 +94,8 @@ class weather extends Component {
         }
       ),
     ]).start(() => {
-      const config = LayoutAnimation.create(250, LayoutAnimation.Types.easeOut, LayoutAnimation.Properties.opacity);
-      LayoutAnimation.configureNext(config);
+      const config = create(250, Types.easeOut, Properties.opacity);
+      configureNext(config);
       this.setState({ 
         selected: timeSelected 
       }, () => {
@@ -134,8 +137,8 @@ class weather extends Component {
       );
 
       // TEMPORARY
-      const weathers = [<Cloud style={{left: 40}}/>, <Sun />, <Rain />, <Snow />];
-      const weather = weathers[Math.floor( 3)];
+      const weathers = [<Cloud style={{left: 40}}/>, <Sun/>, <Rain/>, <Snow/>];
+      const weather = weathers[Math.floor( Math.random() * 4)];
 
       return (
         <Animated.View 

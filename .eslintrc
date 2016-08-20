@@ -1,0 +1,27 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "impliedStrict": true,
+            "experimentalObjectRestSpread": true
+        }
+  },
+  "env": {
+        "es6": true,
+        "browser": true,
+        "commonjs": true
+    },
+    "plugins": [ 
+      "react",
+      "react-native"
+  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "rules": {
+    "react-native/no-unused-styles": 1,
+    "react-native/split-platform-components": 2,
+    "react-native/no-inline-styles": 1,
+    "react-native/no-color-literals": 1,
+  }
+}

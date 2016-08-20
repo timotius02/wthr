@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {
 	StyleSheet,
-	Text,
-	View,
 	Animated,
 	Easing
 } from 'react-native';
@@ -21,9 +19,9 @@ export default class Rain extends Component {
 	componentDidMount() {
 		Animated.timing(
 			this.state.top, {
-          		toValue: 0,
+				toValue: 0,
 				duration: 250,
-          		easing: Easing.bezier(0.645, 0.045, 0.355, 1)
+				easing: Easing.bezier(0.645, 0.045, 0.355, 1)
 			}
 		).start();
 	}
@@ -35,16 +33,16 @@ export default class Rain extends Component {
 
 		return (
 			<Animated.Text style={ cloudStyle } > 
-	    		{icon('cloud')}
-	  		</Animated.Text>
+				{icon('cloud')}
+			</Animated.Text>
 		)
 	}
 }
 
 const styles = StyleSheet.create({
-  	cloud: {
-  		fontSize: 110,
+  cloud: {
+		fontSize: 110,
 		color: '#fff',
- 		fontFamily: 'weathericons'
+		fontFamily: 'weathericons'
 	}
 }) 

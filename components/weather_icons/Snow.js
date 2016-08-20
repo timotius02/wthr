@@ -67,29 +67,29 @@ export default class Snow extends Component {
 						Animated.timing(
 							snowFlake.translateX, {
 								toValue: -20 * direction,
-								duration: 400,
-								easing: Easing.linear
+								duration: 500,
+								easing: Easing.inOut(Easing.ease)
 							}
 						),
 						Animated.timing(
 							snowFlake.translateX, {
 								toValue: 20 * direction,
-								duration: 800,
-								easing: Easing.linear
+								duration: 1000,
+								easing: Easing.inOut(Easing.ease)
 							}
 						),
 						Animated.timing(
 							snowFlake.translateX, {
 								toValue: -20 * direction,
-								duration: 800,
-								easing: Easing.linear
+								duration: 1000,
+								easing: Easing.inOut(Easing.ease)
 							}
 						),
 						Animated.timing(
 							snowFlake.translateX, {
 								toValue: 10 * direction,
-								duration: 400,
-								easing: Easing.linear
+								duration: 500,
+								easing: Easing.inOut(Easing.ease)
 							}
 						)
 					])
@@ -118,26 +118,28 @@ export default class Snow extends Component {
 	componentWillUnmount() {
 		this._mounted = false;
 
-
 	}
 	
 	render() {
 		const { style } = this.props;
+		const { top } = this.state;
 
 		const snowWaves = this.state.snow.map((wave, index) => {
 			const { left, top, translateX, translateY } = wave;
 	
 			const transform = [{translateY}, {translateX}];
 
+			const style = [Styles.snow, {top, left, transform}] 
+
 			return (
-				<Animated.Text key={index} style={[styles.snow, style, {top, left, transform}]}>
+				<Animated.Text key={index} style={style}>
 					{icon('snowflake-cold')}
 				</Animated.Text>
 			)
 		})
 
 		return (
-			<Animated.View style={{top: this.state.top}}>
+			<Animated.View style={[style, { top }]}>
 				<Cloud style={{left: 40}}/>
 
 				{ snowWaves }
@@ -146,7 +148,7 @@ export default class Snow extends Component {
 	}
 }
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
 	snow: {
 		position: 'absolute',
 		fontSize: 40,
