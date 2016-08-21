@@ -30,21 +30,43 @@ const { create, configureNext, Types, Properties } = LayoutAnimation;
 UIManager.setLayoutAnimationEnabledExperimental && 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
-var morning = '9am';
-var afternoon = '12pm';
-var evening = '3pm';
-var night = '6pm';
+var morningTime = '9:00 am';
+var afternoonTime = '12:00 pm';
+var eveningTime = '3:00 pm';
+var nightTime= '6:00 pm';
 
 class weather extends Component {
   constructor(props) {
     super(props);
+    
+    const now = new Date();
+    const morningDate = new Date(`${now.toDateString()} ${morningTime}`);
+    const afternoonDate = new Date(`${now.toDateString()} ${afternoonTime}`);
+    const eveningDate = new Date(`${now.toDateString()} ${eveningTime}`);
+    const nightDate = new Date(`${now.toDateString()} ${nightTime}`);
+
+    let selected = 'night';
+    
+    if (now.getTime() < morningDate.getTime()) 
+      selected = 'morning';
+    else if (now.getTime() < afternoonDate.getTime())
+      selected = 'afternoon';  
+    else if (now.getTime() < eveningDate.getTime())
+      selected = 'evening'  
+   
+    const morning = new Animated.Value(selected === 'morning'? 1 : 0);
+    const afternoon = new Animated.Value(selected === 'afternoon'? 1 : 0);
+    const evening = new Animated.Value(selected === 'evening'? 1 : 0);
+    const night = new Animated.Value(selected === 'night'? 1 : 0);
+
     this.state = { 
-      selected: 'morning',
-      morning: new Animated.Value(1),
-      afternoon: new Animated.Value(0),
-      evening: new Animated.Value(0),
-      night: new Animated.Value(0)
+      selected,
+      morning,
+      afternoon,
+      evening,
+      night
     }
+      
 
     this.render.bind(this);
   }
@@ -139,7 +161,7 @@ class weather extends Component {
             background={TouchableNativeFeedback.SelectableBackground()}>
             <View style={viewStyle}>
               <View style={styles.halfView}>
-                <Animated.View style={{top}}>
+                <Animated.View style={{top: -10}}>
                   { isSelected ? weather : null}
                 </Animated.View>
               </View>
@@ -147,7 +169,7 @@ class weather extends Component {
                 <Text style={styles.header}>{time.toUpperCase()}</Text>
                 <Text style={styles.degree}>-2&deg;</Text>
 
-                <Animated.View style={{bottom}}>
+                <Animated.View style={{bottom: 0}}>
                   <Text style={styles.summary}>Sunny</Text>
                   <Text style={styles.text}>Wind: E 7 mph</Text>
                   <Text style={styles.text}>Humidity: 91%</Text>
