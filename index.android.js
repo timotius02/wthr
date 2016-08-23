@@ -27,6 +27,8 @@ import {
 
 import fetchWeather from './api/api';
 
+const icon = require('react-native-iconic-font/materialicons');
+
 const { create, configureNext, Types, Properties } = LayoutAnimation;
 
 // Android Specific
@@ -162,7 +164,7 @@ class weather extends Component {
       Animated.timing(
         this.state[prevSelected].animationState, {
           toValue: 0,
-          duration: 100,
+          duration: 200,
           easing: Easing.bezier(0.645, 0.045, 0.355, 1)
         })
     ]).start(() => {
@@ -251,7 +253,9 @@ class weather extends Component {
     const containerStyle = [styles.container, this.state.loading? loadingStyle : {}];
     return (
       <View style={containerStyle}>
-        
+        <Text style={styles.icon}>
+                {icon('drag_handle')}
+        </Text>
         { this.state.loading? loadingScreen: weatherLayout }
         
       </View>
@@ -267,13 +271,11 @@ const color = {
   night: '#644749'
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: color.base,
-    paddingTop: 33
+    backgroundColor: color.base
   },
   viewStyleBase: {
       flexDirection: 'row',
@@ -306,9 +308,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16
   },
-   centering: {
-
-    padding: 8,
+   icon: {
+    fontFamily: 'materialicons',
+    fontSize: 33,
+    color: '#fff',
+    opacity: 0.5, 
+    textAlign: 'right',
+    paddingRight: 10
   },
 });
 
