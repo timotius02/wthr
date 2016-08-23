@@ -44,11 +44,13 @@ const afternoonDate = new Date(`${now.toDateString()} ${afternoonTime}`);
 const eveningDate = new Date(`${now.toDateString()} ${eveningTime}`);
 const nightDate = new Date(`${now.toDateString()} ${nightTime}`);
 
+const times = [morningDate.getTime() / 1000, afternoonDate.getTime() / 1000, eveningDate.getTime() / 1000, nightDate.getTime() / 1000];
+
+
 class weather extends Component {
   constructor(props) {
     super(props);
   
-
     let selected = 'morning';
     
     if (now.getTime() > morningDate.getTime()) {
@@ -74,19 +76,39 @@ class weather extends Component {
     this.state = { 
       selected,
       morning: {
-        animationState: morningState
+        animationState: morningState,
+        temperature: 0,
+        summary: 'Sunny',
+        icon: 'clear-day',
+        windSpeed: '7',
+        humidity: 0.91 
       },
       afternoon: {
-        animationState: afternoonState
+        animationState: afternoonState,
+        temperature: 0,
+        summary: 'Sunny',
+        icon: 'clear-day',
+        windSpeed: '7',
+        humidity: 0.91 
       },
       evening: {
-        animationState: eveningState
+        animationState: eveningState,
+        temperature: 0,
+        summary: 'Sunny',
+        icon: 'clear-day',
+        windSpeed: '7',
+        humidity: 0.91 
       },
       night: {
-        animationState: nightState
+        animationState: nightState,
+        temperature: 0,
+        summary: 'Sunny',
+        icon: 'clear-day',
+        windSpeed: '7',
+        humidity: 0.91 
       }
     }
-      
+
 
     this.render.bind(this);
   }
@@ -95,16 +117,36 @@ class weather extends Component {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const coords = position.coords;
-        
-        const times = [morningDate.getTime() / 1000, afternoonDate.getTime() / 1000, eveningDate.getTime() / 1000, nightDate.getTime() / 1000];
-        console.log(times)
+
+        console.log(coords.latitude, coords.longitude);
         fetchWeather(coords.latitude, coords.longitude, times)
           .then((weather) => {
-            console.log(weather)
+            const morning = weather[0];
+            const afternoon = weather[1];
+            const evening = weather[2];
+            const night = weather[3];
+
+            this.setState({
+              morning: {
+                ...this.state.morning, ...morning
+              },
+              afternoon: {
+                ...this.state.afternoon, ...afternoon
+              },
+              evening: {
+                ...this.state.evening, ...evening
+              },
+              night: {
+                ...this.state.night, ...night
+              }
+            }); 
+          })
+          .catch((error) => {
+            console.log(error);
           })
       },
       (error) => alert(error),
-      {enableHighAccuracy: false}
+      {enableHighAccuracy: true}
     
     );
   }
@@ -118,7 +160,7 @@ class weather extends Component {
       Animated.timing(
         this.state[prevSelected].animationState, {
           toValue: 0,
-          duration: 200,
+          duration: 100,
           easing: Easing.bezier(0.645, 0.045, 0.355, 1)
         })
     ]).start(() => {
@@ -143,6 +185,9 @@ class weather extends Component {
     const timesOfDays = ['morning', 'afternoon', 'evening', 'night'];
     const weatherLayout = timesOfDays.map((time) => {
 
+      const { animationState, temperature, icon } = this.state[time];
+      const { summary, windSpeed, humidity } = this.state[time];
+
       const isSelected = this.state.selected === time;
       const flex = isSelected? 8 : 3;
 
@@ -151,13 +196,13 @@ class weather extends Component {
       const weather = weathers[Math.floor( Math.random() * 4)];
 
       // Weather animation slide down
-      const top = this.state[time].animationState.interpolate({
+      const top = animationState.interpolate({
         inputRange: [0, 1],
         outputRange: [-350, -10]
       });
 
       // weather info slide up
-      const bottom = this.state[time].animationState.interpolate({
+      const bottom = animationState.interpolate({
         inputRange: [0, 1],
         outputRange: [-180, 0]
       });
@@ -179,12 +224,12 @@ class weather extends Component {
               </View>
               <View style={styles.halfView}>
                 <Text style={styles.header}>{time.toUpperCase()}</Text>
-                <Text style={styles.degree}>-2&deg;</Text>
+                <Text style={styles.degree}>{Math.round(temperature)}&deg; F</Text>
 
                 <Animated.View style={{bottom}}>
-                  <Text style={styles.summary}>Sunny</Text>
-                  <Text style={styles.text}>Wind: E 7 mph</Text>
-                  <Text style={styles.text}>Humidity: 91%</Text>
+                  <Text style={styles.summary}>{summary}</Text>
+                  <Text style={styles.text}>Wind: {Math.round(windSpeed)} mph</Text>
+                  <Text style={styles.text}>Humidity: {Math.round(humidity * 100)}%</Text>
                 </Animated.View>
               </View>
           </View>
@@ -238,18 +283,19 @@ const styles = StyleSheet.create({
   },
   degree: {
     color: '#fff',
-    fontSize: 34,
+    fontSize: 38,
     paddingBottom: 10
   },
   summary: {
     paddingBottom: 10,
     color: '#fff',
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '500'
   },
   text: {
     color: '#fff',
     fontWeight: '500',
+    fontSize: 16
   }
 });
 

@@ -28,13 +28,12 @@ export default class Snow extends Component {
 		const snow  = [];
 
 		for (let i = 0; i < flakeAmount; i++) {
-			const leftOrigin = randRange(leftMin, leftMax);
 
 			snow.push({
 				left: new Animated.Value(randRange(leftMin, leftMax)),
 				top: new Animated.Value(randRange(topMin, topMax)),
 				translateX: new Animated.Value(0),
-				translateY: new Animated.Value(0)
+				animationState: new Animated.Value(0)
 			})
 		}
 
@@ -55,8 +54,8 @@ export default class Snow extends Component {
 				const direction = Math.random() > 0.5? 1 : -1;
 				Animated.parallel([
 					Animated.timing(
-						snowFlake.translateY, {
-							toValue: 140,
+						snowFlake.animationState, {
+							toValue: 1,
 							duration: randRange(2500, 3100),
 							easing: Easing.linear
 						}
@@ -93,7 +92,7 @@ export default class Snow extends Component {
 					])
 				]).start(() => {
 					setTimeout(() => {
-						snowFlake.translateY.setValue(0);
+						snowFlake.animationState.setValue(0);
 						snowFlake.left.setValue(randRange(leftMin, leftMax));
 						snowFlake.top.setValue(100);
 						
@@ -120,14 +119,23 @@ export default class Snow extends Component {
 	
 	render() {
 		const { style } = this.props;
-		const { top } = this.state;
+		const { top, snow } = this.state;
 
-		const snowWaves = this.state.snow.map((wave, index) => {
-			const { left, top, translateX, translateY } = wave;
+		const snowWaves = snow.map((wave, index) => {
+			const { left, top, translateX, animationState } = wave;
 	
+			const translateY = animationState.interpolate({
+				inputRange: [0, 1],
+				outputRange: [0, 140]
+			})
+
+			const opacity = animationState.interpolate({
+				inputRange: [0, 1],
+				outputRange: [1, 0]
+			})
 			const transform = [{translateY}, {translateX}];
 
-			const style = [Styles.snow, {top, left, transform}] 
+			const style = [Styles.snow, {top, left, transform, opacity}] 
 
 			return (
 				<Animated.Text key={index} style={style}>
