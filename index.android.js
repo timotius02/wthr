@@ -14,7 +14,8 @@ import {
   Animated,
   Easing,
   TouchableNativeFeedback, // Android Specific
-  LayoutAnimation
+  LayoutAnimation,
+  ActivityIndicator
 } from 'react-native';
 
 import { 
@@ -74,6 +75,7 @@ class weather extends Component {
     const nightState = new Animated.Value(selected === 'night'? 1 : 0);
 
     this.state = { 
+      loading: true,
       selected,
       morning: {
         animationState: morningState,
@@ -118,7 +120,6 @@ class weather extends Component {
       (position) => {
         const coords = position.coords;
 
-        console.log(coords.latitude, coords.longitude);
         fetchWeather(coords.latitude, coords.longitude, times)
           .then((weather) => {
             const morning = weather[0];
@@ -127,6 +128,7 @@ class weather extends Component {
             const night = weather[3];
 
             this.setState({
+              loading: false,
               morning: {
                 ...this.state.morning, ...morning
               },
@@ -146,7 +148,7 @@ class weather extends Component {
           })
       },
       (error) => alert(error),
-      {enableHighAccuracy: true}
+      {enableHighAccuracy: false}
     
     );
   }
@@ -208,7 +210,7 @@ class weather extends Component {
       });
 
       const viewStyle = [styles.viewStyleBase, {backgroundColor: color[time]}];
-
+      
       return (
         <Animated.View 
           key={time}
@@ -238,9 +240,20 @@ class weather extends Component {
       )
     })
 
+    
+    const loadingScreen = <ActivityIndicator style={styles.centering} color='white' size='large'/>;
+    const loadingStyle = {
+      paddingTop: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+    }
+
+    const containerStyle = [styles.container, this.state.loading? loadingStyle : {}];
     return (
-      <View style={styles.container}>
-        { weatherLayout }
+      <View style={containerStyle}>
+        
+        { this.state.loading? loadingScreen: weatherLayout }
+        
       </View>
     );
   }
@@ -254,10 +267,6 @@ const color = {
   night: '#644749'
 }
 
-const viewStyleBase = {
-    flexDirection: 'row',
-    paddingTop: 16,
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -296,7 +305,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '500',
     fontSize: 16
-  }
+  },
+   centering: {
+
+    padding: 8,
+  },
 });
 
 AppRegistry.registerComponent('weather', () => weather);

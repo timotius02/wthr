@@ -41,11 +41,8 @@ export default class Snow extends Component {
 			top: new Animated.Value(0),
 			snow
 		}
-
-		this._mounted = false;
 	}
 	componentDidMount() {
-		this._mounted = true;
 
 		let delay = 0;
 
@@ -106,15 +103,7 @@ export default class Snow extends Component {
 			}
 			
 			animate()
-
-		})	
-
-		
-	}
-
-	componentWillUnmount() {
-		this._mounted = false;
-
+		})		
 	}
 	
 	render() {
@@ -159,7 +148,6 @@ const Styles = StyleSheet.create({
 		position: 'absolute',
 		fontSize: 40,
 		color: '#fff',
-	 	fontFamily: 'weathericons',
-
+		fontFamily: 'weathericons',
 	}
 }) 
