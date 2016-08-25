@@ -29,7 +29,7 @@ export default class Rain extends Component {
 	render() {
 		const { style } = this.props;
 		const { top } = this.state;
-		const cloudStyle = [styles.cloud, style, { top}];
+		const cloudStyle = [styles.cloud, style,];
 
 		return (
 			<Animated.Text style={ cloudStyle } > 
@@ -41,6 +41,7 @@ export default class Rain extends Component {
 
 const styles = StyleSheet.create({
   cloud: {
+  	left: 40,
 		fontSize: 110,
 		color: '#fff',
 		fontFamily: 'weathericons'

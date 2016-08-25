@@ -27,7 +27,9 @@ import {
 
 import fetchWeather from './api/api';
 
-const icon = require('react-native-iconic-font/materialicons');
+import WeatherInfo from './components/WeatherInfo';
+import MenuButton from './components/MenuButton';
+
 
 const { create, configureNext, Types, Properties } = LayoutAnimation;
 
@@ -189,8 +191,7 @@ class weather extends Component {
     const timesOfDays = ['morning', 'afternoon', 'evening', 'night'];
     const weatherLayout = timesOfDays.map((time) => {
 
-      const { animationState, temperature, icon } = this.state[time];
-      const { summary, windSpeed, humidity } = this.state[time];
+      const { animationState, temperature, icon, ...other } = this.state[time];
 
       const isSelected = this.state.selected === time;
       const flex = isSelected? 8 : 3;
@@ -214,7 +215,7 @@ class weather extends Component {
       const viewStyle = [styles.viewStyleBase, {backgroundColor: color[time]}];
       
       return (
-        <Animated.View 
+        <View 
           key={time}
           style={{flex }}>
           <TouchableNativeFeedback 
@@ -231,17 +232,14 @@ class weather extends Component {
                 <Text style={styles.degree}>{Math.round(temperature)}&deg; F</Text>
 
                 <Animated.View style={{bottom}}>
-                  <Text style={styles.summary}>{summary}</Text>
-                  <Text style={styles.text}>Wind: {Math.round(windSpeed)} mph</Text>
-                  <Text style={styles.text}>Humidity: {Math.round(humidity * 100)}%</Text>
+                  <WeatherInfo {...other} />
                 </Animated.View>
               </View>
           </View>
         </TouchableNativeFeedback>
-      </Animated.View>
+      </View>
       )
     })
-
     
     const loadingScreen = <ActivityIndicator style={styles.centering} color='white' size='large'/>;
     const loadingStyle = {
@@ -249,15 +247,14 @@ class weather extends Component {
       alignItems: 'center',
       justifyContent: 'center',
     }
+    
+    const layout = [<MenuButton key={'menu'}/>].concat(weatherLayout);
 
     const containerStyle = [styles.container, this.state.loading? loadingStyle : {}];
     return (
       <View style={containerStyle}>
-        <Text style={styles.icon}>
-                {icon('drag_handle')}
-        </Text>
-        { this.state.loading? loadingScreen: weatherLayout }
-        
+
+        { this.state.loading? loadingScreen : layout }
       </View>
     );
   }
@@ -296,17 +293,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 38,
     paddingBottom: 10
-  },
-  summary: {
-    paddingBottom: 10,
-    color: '#fff',
-    fontSize: 32,
-    fontWeight: '500'
-  },
-  text: {
-    color: '#fff',
-    fontWeight: '500',
-    fontSize: 16
   },
    icon: {
     fontFamily: 'materialicons',
