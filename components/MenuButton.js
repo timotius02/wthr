@@ -2,9 +2,13 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
-  View,
+  Animated,
   PanResponder,
+  Easing,
+  Platform
 } from 'react-native';
+
+import Style from '../stylesheets/Style';
 
 const icon = require('react-native-iconic-font/materialicons');
 
@@ -13,21 +17,21 @@ export default class MenuButton extends Component {
   constructor(props) {
     super(props)
 
-    this._container;
-
-    this._minHeight = 33;
+    this._minHeight = Style.HEIGHT_UNIT;
     this._maxHeight = 200;
-    this._containerProps = {
-      style: {
-        height: this._minHeight
-      }
+
+    this.state = {
+      height: new Animated.Value(this._minHeight),
+      menuOpen: false
     }
 
-    this._updateHeight.bind(this);
+    this._newPanHandler.bind(this);
+    this.open.bind(this);
+    this.close.bind(this);
   }
-  
-  componentWillMount() {
-     this._panResponder = PanResponder.create({
+
+  _newPanHandler() {
+    this._panResponder = PanResponder.create({
       // Ask to be the responder:
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
@@ -35,49 +39,71 @@ export default class MenuButton extends Component {
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
 
       onPanResponderGrant: (evt, gestureState) => {
-          this._updateHeight(this._minHeight)
+          this.state.height.setOffset(this.state.height._value);
+          this.state.height.setValue(0);
       },
-      onPanResponderMove: (evt, gestureState) => {
-          this._updateHeight(this._minHeight + gestureState.dy);
-      },
+      onPanResponderMove: Animated.event([
+          null, {dy: this.state.height}
+        ]),
       onPanResponderTerminationRequest: (evt, gestureState) => true,
       onPanResponderRelease: (evt, gestureState) => {
+        this.state.height.flattenOffset();
+
+        // Snap to min/max height of the menu
         const midHeight = (this._minHeight + this._maxHeight) /2;
-        if (this._containerProps.style.height <= midHeight) {
-          this._updateHeight(this._minHeight);
+        if (this.state.height._value <= midHeight) {
+          this.open()
         }
         else {
-          this._updateHeight(this._maxHeight); 
+          this.close();
         }
-
-      },
-      onPanResponderTerminate: (evt, gestureState) => {
-        // Another component has become the responder, so this gesture
-        // should be cancelled
       },
     });
   }
-  componentDidMount() {
-    this._updateHeight(this._minHeight);
+  open() {
+    Animated.timing(this.state.height, {
+      toValue: this._minHeight,
+      easing: Easing.out(Easing.ease),
+      duration: 100
+    }).start(() => {
+      if (this.state.menuOpen === true) 
+        this.setState({menuOpen: false})
+    });
   }
 
-  _updateHeight(height) {
-    this._containerProps.style.height = height;
-    
-    if (this._containerProps.style.height >= this._minHeight &&
-        this._containerProps.style.height <= this._maxHeight) {
-      this._container.setNativeProps(this._containerProps);
-    }
+  close() {
+    Animated.timing(this.state.height, {
+      toValue: this._maxHeight,
+      easing: Easing.out(Easing.ease),
+      duration: 100
+    }).start(() => {
+      this.setState({menuOpen: true});
+    });
   }
- 
+  
+  componentWillMount() {
+     this._newPanHandler();
+  }
+  
   render() {
-    return (
-      <View ref={view => this._container = view} {...this._panResponder.panHandlers}>
-        <Text style={styles.icon}>
-          {icon('drag_handle')}
-        </Text>          
+    // DOn't allow user to pull tab above or below limit
+    let height = this.state.height.interpolate({
+      inputRange: [this._minHeight - 1, this._minHeight, this._maxHeight, this._maxHeight + 1],
+      outputRange: [this._minHeight, this._minHeight, this._maxHeight, this._maxHeight]
+    })
 
-      </View>
+    return (
+      <Animated.View 
+        {...this._panResponder.panHandlers} 
+        style={{height}}
+        onLayout={this._newPanHandler.bind(this)}>
+        {this.state.menuOpen ? 
+          null :
+          <Text style={styles.icon}>
+            {icon('drag_handle')}
+          </Text> 
+        }         
+      </Animated.View>
     )
   }
 }
@@ -85,7 +111,7 @@ export default class MenuButton extends Component {
 const styles = StyleSheet.create({
 
   icon: {
-    fontFamily: 'materialicons',
+    fontFamily: Platform.OS === 'ios' ? 'Material Icons' : 'materialicons',
     fontSize: 33,
     color: '#fff',
     opacity: 0.5, 

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
 	StyleSheet,
 	Animated,
-	Easing
+	Easing,
+	Platform
 } from 'react-native';
 
 import Cloud from './Cloud';
@@ -147,7 +148,8 @@ const Styles = StyleSheet.create({
 	snow: {
 		position: 'absolute',
 		fontSize: 40,
+		backgroundColor: 'rgba(0,0,0,0)',
 		color: '#fff',
-		fontFamily: 'weathericons',
+		fontFamily: Platform.OS === 'ios' ? 'Weather Icons' : 'weathericons',
 	}
 }) 

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
 	StyleSheet,
 	Animated,
-	Easing
+	Easing,
+	Platform
 } from 'react-native'
 
 import Cloud from './Cloud';
@@ -14,7 +15,6 @@ export default class Rain extends Component {
 		super(props);
 		
 		this.state = {
-			top: new Animated.Value(-170),
 			waves: [
 				new Animated.Value(0), 
 				new Animated.Value(0), 
@@ -27,14 +27,6 @@ export default class Rain extends Component {
 	}
 
 	componentDidMount() {
-
-		Animated.timing(
-			this.state.top, {
-          toValue: 0,
-					duration: 250,
-          easing: Easing.bezier(0.645, 0.045, 0.355, 1)
-			}
-		).start();
 
 		const animate = () => {
 			const animations = this.state.waves.map((wave) => {
@@ -58,7 +50,7 @@ export default class Rain extends Component {
 
 	render() {
 		const { style } = this.props;
-		const { top, waves } = this.state;
+		const { waves } = this.state;
 
 		const rainWaves = waves.map((wave, index) => {
 			const right = wave.interpolate({
@@ -86,7 +78,7 @@ export default class Rain extends Component {
 		})
 
 		return (
-			<Animated.View style={{top}}>
+			<Animated.View>
 				<Cloud style={{left: 40}}/>
 				{rainWaves}
 			</Animated.View>
@@ -98,7 +90,8 @@ const styles = StyleSheet.create({
 	raindrops: {
 		position: 'absolute',
 		fontSize: 45,
+		backgroundColor: 'rgba(0,0,0,0)',
 		color: '#fff',
-		fontFamily: 'weathericons',
+		fontFamily: Platform.OS === 'ios' ? 'Weather Icons' : 'weathericons',
 	}
 }) 

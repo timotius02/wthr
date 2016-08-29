@@ -248,12 +248,11 @@ class weather extends Component {
       justifyContent: 'center',
     }
     
-    const layout = [<MenuButton key={'menu'}/>].concat(weatherLayout);
+    const layout = [<MenuButton key={'menu'} />].concat(weatherLayout);
 
     const containerStyle = [styles.container, this.state.loading? loadingStyle : {}];
     return (
       <View style={containerStyle}>
-
         { this.state.loading? loadingScreen : layout }
       </View>
     );
@@ -293,14 +292,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 38,
     paddingBottom: 10
-  },
-   icon: {
-    fontFamily: 'materialicons',
-    fontSize: 33,
-    color: '#fff',
-    opacity: 0.5, 
-    textAlign: 'right',
-    paddingRight: 10
   },
 });
 
