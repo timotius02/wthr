@@ -1,6 +1,6 @@
 import { weatherApiKey } from './apiKeys'
 
-export default function fetchWeather(lat, long, timeArray) {
+export default function fetchWeatherApi(lat, long, timeArray) {
   const url = `https://api.forecast.io/forecast/${weatherApiKey}/${lat},${long}`;
 
   return fetch(url)
