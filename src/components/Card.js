@@ -47,10 +47,9 @@ export default class Card extends Component {
         return null;
     }
   }
-
   render() {
-    const { time, temperature, ...other } = this.props;
-    const { onPress, isSelected } = this.props;
+    const { time, temperature, onPress, isSelected, ...other } = this.props;
+
 
     const backgroundColor = color[time];
 
@@ -123,3 +122,4 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
 });
+

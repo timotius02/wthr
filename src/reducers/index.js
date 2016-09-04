@@ -34,13 +34,14 @@ if (now.getTime() > eveningDate.getTime()) {
 }
 
 const initialState = {
-  openMenu: false,
+  isMenuOpen: false,
   loading: true,
   coords: {latitude: 0, longitude: 0},
   error: '',
   selected,
   times: {
     morning: {
+      time: morningDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -48,6 +49,7 @@ const initialState = {
       humidity: 0.91 
     },
     afternoon: {
+      time: afternoonDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -55,6 +57,7 @@ const initialState = {
       humidity: 0.91 
     },
     evening: {
+      time: eveningDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -62,6 +65,7 @@ const initialState = {
       humidity: 0.91 
     },
     night: {
+      time: nightDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -76,13 +80,13 @@ export default function rootReducer(state = initialState, action) {
     case OPEN_MENU: {
       return {
         ...state,
-        openMenu: true
+        isMenuOpen: true
       };
     }
     case CLOSE_MENU: {
       return {
         ...state,
-        openMenu: false
+        isMenuOpen: false
       };
     }
     case UPDATE_LOCATION: {
@@ -109,10 +113,22 @@ export default function rootReducer(state = initialState, action) {
         ...state,
         loading: false,
         times: {
-          morning,
-          afternoon,
-          evening,
-          night
+          morning: {
+            time: state.times.morning.time,
+            ...morning
+          },
+          afternoon: {
+            time: state.times.afternoon.time,
+            ...afternoon
+          },
+          evening: {
+            time: state.times.evening.time,
+            ...evening
+          },
+          night: {
+            time: state.times.night.time,
+            ...night
+          }
         }
       }
     }

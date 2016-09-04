@@ -12,10 +12,12 @@ import {
 } from 'react-native';
 
 import MenuButton from '../components/MenuButton';
-
-import { fetchWeather, setSelectedTime } from '../actions/';
-
 import Card from '../components/Card';
+
+import { fetchWeather, setSelectedTime, closeMenu } from '../actions/';
+
+import Style from '../stylesheets/Style';
+
 
 const { create, configureNext, Types, Properties } = LayoutAnimation;
 
@@ -23,36 +25,12 @@ const { create, configureNext, Types, Properties } = LayoutAnimation;
 UIManager.setLayoutAnimationEnabledExperimental && 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
-var morningTime = '9:00 am';
-var afternoonTime = '12:00 pm';
-var eveningTime = '3:00 pm';
-var nightTime= '6:00 pm';
-
-const now = new Date();
-const morningDate = new Date(`${now.toDateString()} ${morningTime}`);
-const afternoonDate = new Date(`${now.toDateString()} ${afternoonTime}`);
-const eveningDate = new Date(`${now.toDateString()} ${eveningTime}`);
-const nightDate = new Date(`${now.toDateString()} ${nightTime}`);
 
 class WeatherApp extends Component {
   constructor(props) {
     super(props);
-  
-    let selected = 'morning';
     
-    if (now.getTime() > morningDate.getTime()) {
-      selected = 'afternoon';
-      morningDate.setDate(morningDate.getDate() + 1);
-    }
-    if (now.getTime() > afternoonDate.getTime()) {
-      selected = 'evening';  
-      afternoonDate.setDate(afternoonDate.getDate() + 1);
-    }
-    if (now.getTime() > eveningDate.getTime()) {
-      selected = 'night'  
-      eveningDate.setDate(eveningDate.getDate() + 1);
-    }
-   
+    const { selected } = props;
     const morningState = new Animated.Value(selected === 'morning'? 1 : 0);
     const afternoonState = new Animated.Value(selected === 'afternoon'? 1 : 0);
     const eveningState = new Animated.Value(selected === 'evening'? 1 : 0);
@@ -73,22 +51,27 @@ class WeatherApp extends Component {
       }
     }
 
-
     this.render.bind(this);
   }
-
+  
   componentDidMount() {
-    const times = [morningDate.getTime() / 1000, afternoonDate.getTime() / 1000, eveningDate.getTime() / 1000, nightDate.getTime() / 1000];
+    const { morning, afternoon, evening, night } = this.props.times;
+    const times = [ morning.time, afternoon.time, evening.time, night.time];
     this.props.fetchWeather(times);
   }
   _onPressTime(timeSelected) {
-    if (this.state.selected === timeSelected)
+    const { selected, setSelectedTime, isMenuOpen, closeMenu } = this.props;
+
+    if (isMenuOpen) {
+      closeMenu();
+      return
+    }
+    else if (selected === timeSelected)
       return 
 
-    const prevSelected = this.props.selected;
-    
+
     Animated.timing(
-      this.state[prevSelected].animationState, {
+      this.state[selected].animationState, {
         toValue: 0,
         duration: 200,
         easing: Easing.bezier(0.645, 0.045, 0.355, 1)
@@ -97,7 +80,7 @@ class WeatherApp extends Component {
       const config = create(250, Types.easeOut, Properties.opacity);
       configureNext(config);
       
-      this.props.setSelectedTime(timeSelected);
+      setSelectedTime(timeSelected);
       Animated.timing(
         this.state[timeSelected].animationState, {
           toValue: 1,
@@ -108,48 +91,49 @@ class WeatherApp extends Component {
     }) 
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.isMenuOpen !== this.props.isMenuOpen) {
+      return false;
+    }
+
+    return true;
+  }
+
   render() {
 
-    const { times } = this.props;
+    const { times, selected, loading, isMenuOpen, closeMenu } = this.props;
     const weatherLayout = Object.keys(times).map((time) => {
-      const { temperature, icon, ...other } = times[time];
       
       const { animationState } = this.state[time];
-
-      const isSelected = this.props.selected === time;
+      const isSelected = selected === time;
 
       return (
-        <Card key={time} {...other} time={time} temperature={temperature} isSelected={isSelected}
+        <Card key={time} {...times[time]} time={time}  isSelected={isSelected}
             onPress={this._onPressTime.bind(this, time)} animationState={animationState} />
       )
     })
     
-    const loadingScreen = <ActivityIndicator style={styles.centering} color='white' size='large'/>;
-    
     const layout = [<MenuButton key={'menu'} />].concat(weatherLayout);
 
-    const containerStyle = [styles.container, this.props.loading? styles.loading : {}];
+    const containerStyle = [styles.container, loading? styles.loading : {}];
     return (
       <View style={containerStyle}>
-        { this.props.loading? loadingScreen : layout }
+        { 
+          loading? 
+          <ActivityIndicator style={styles.centering} color='white' size='large'/>: 
+          layout 
+        }
       </View>
     );
   }
 }
 
-const color = {
-  base: '#8ba892',
-  morning: '#e3bb88',
-  afternoon: '#d89864',
-  evening: '#b1695a',
-  night: '#644749'
-}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: color.base
+    backgroundColor: Style.COLORS.base
   },
   loading: {
     paddingTop: 0,
@@ -160,12 +144,12 @@ const styles = StyleSheet.create({
 
 
 function mapStateToProps(state) {
-  const { selected, loading, coords, error, times} = state;
+  const { selected, loading, coords, times, isMenuOpen } = state;
   return {
+    isMenuOpen,
     selected,
     loading,
     coords,
-    error,
     times
   }
 }
@@ -173,7 +157,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     fetchWeather: bindActionCreators(fetchWeather, dispatch),
-    setSelectedTime: bindActionCreators(setSelectedTime, dispatch)
+    setSelectedTime: bindActionCreators(setSelectedTime, dispatch),
+    closeMenu: bindActionCreators(closeMenu, dispatch)
   }  
 }
 

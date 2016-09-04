@@ -20,8 +20,17 @@ function em(value) {
   return unit * value;
 }
 
+// Default time of day colors
+const COLORS = {
+  base: '#8ba892',
+  morning: '#e3bb88',
+  afternoon: '#d89864',
+  evening: '#b1695a',
+  night: '#644749'
+}
+
 // Then we set our styles with the help of the em() function
-export default Style = {
+export default {
   
   // GENERAL
   DEVICE_WIDTH: x,
@@ -39,5 +48,7 @@ export default Style = {
   FONT_SIZE_SMALLER: em(0.75),
   FONT_SIZE_SMALL: em(0.875),
   FONT_SIZE_TITLE: em(1.25),
+
   
+  COLORS,
 };
