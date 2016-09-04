@@ -8,10 +8,16 @@ import {
 } from 'react-native';
 
 import { 
-  Sun, 
-  Cloud, 
-  Rain, 
-  Snow
+  ClearNight,
+  Cloudy,
+  Fog,
+  PartlyCloudyDay,
+  PartlyCloudyNight,
+  Rain,
+  Sleet,
+  Snow,
+  Sun,
+  Wind
 } from './weather_icons/';
 
 import WeatherInfo from './WeatherInfo';
@@ -35,27 +41,50 @@ export default class Card extends Component {
 
   _weatherAnimation(weather) {
     switch(weather) {
-      case 'Sun':
-        return <Sun/>;
-      case 'Cloud':
-        return  <Cloud style={{left: 40}}/>;
-      case 'Rain':
+      case 'clear-day':
+        return <Sun />;
+      case 'clear-night':
+        return <ClearNight />;
+      case 'rain':
         return <Rain />;
-      case 'Snow':
+      case 'snow':
         return <Snow />;
-      default:
+      case 'sleet':
+        return <Sleet />;
+      case 'wind':
+        return <Wind />;
+      case 'fog':
+        return <Fog />;
+      case 'cloudy':
+        return  <Cloudy style={{left: 40}}/>;
+      case 'partly-cloudy-day':
+        return <PartlyCloudyDay />;
+      case 'partly-cloudy-night':
+        return <PartlyCloudyNight />;
+      default: 
         return null;
+
+      // case 'Sun':
+      //   return <Sun/>;
+      // case 'Cloudy':
+      //   return  <Cloudy style={{left: 40}}/>;
+      // case 'Rain':
+      //   return <Rain />;
+      // case 'Snow':
+      //   return <Snow />;
+      // default:
+      //   return null;
     }
   }
   render() {
-    const { time, temperature, onPress, isSelected, ...other } = this.props;
+    const { time, temperature, onPress, isSelected, icon, ...other } = this.props;
 
 
     const backgroundColor = color[time];
 
     // TEMPORARY
-    const weathers = ['Cloud', 'Sun', 'Rain', 'Snow'];
-    const weather = weathers[Math.floor( Math.random() * 4)];
+    const weathers = ['clear-day', 'clear-night', 'rain', 'snow', 'sleet', 'wind', 'fog', 'cloudy', 'partly-cloudy-day', 'partly-cloudy-night'];
+    const weather = weathers[Math.floor( Math.random() * 10)];
 
 
     const viewStyle = [styles.viewStyleBase, {backgroundColor}];
@@ -83,7 +112,7 @@ export default class Card extends Component {
           <View style={viewStyle}>
             <View style={styles.halfView}>
               <Animated.View style={{top}}>
-                { isSelected ? this._weatherAnimation(weather) : null}
+                { isSelected ? this._weatherAnimation(icon) : null}
               </Animated.View>
             </View>
             <View style={styles.halfView}>

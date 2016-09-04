@@ -6,7 +6,7 @@ import {
 	Platform
 } from 'react-native'
 
-import Cloud from './Cloud';
+import Cloudy from './Cloudy';
 
 const icon = require('react-native-iconic-font/weathericons');
 
@@ -79,7 +79,7 @@ export default class Rain extends Component {
 
 		return (
 			<Animated.View>
-				<Cloud style={{left: 40}}/>
+				<Cloudy style={{left: 40}}/>
 				{rainWaves}
 			</Animated.View>
 		)
