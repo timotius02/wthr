@@ -41,4 +41,4 @@ android/app/libs
 android/keystores/debug.keystore
 
 # API Keys
-api/apiKeys.js
+src/api/apiKeys.js

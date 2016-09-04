@@ -3,7 +3,8 @@ import {
 	StyleSheet,
 	Animated,
 	Easing,
-	Platform
+	Platform,
+	View
 } from 'react-native'
 
 import Cloudy from './Cloudy';
@@ -49,7 +50,6 @@ export default class Rain extends Component {
 	}
 
 	render() {
-		const { style } = this.props;
 		const { waves } = this.state;
 
 		const rainWaves = waves.map((wave, index) => {
@@ -68,7 +68,7 @@ export default class Rain extends Component {
 				outputRange: [1, 0]
 			});
 
-			const rainStyle = [styles.raindrops, style, {right, bottom, opacity}];
+			const rainStyle = [styles.raindrops, {right, bottom, opacity}];
 
 			return (
 				<Animated.Text key={index} style={rainStyle}>
@@ -78,10 +78,10 @@ export default class Rain extends Component {
 		})
 
 		return (
-			<Animated.View>
-				<Cloudy style={{left: 40}}/>
+			<View style={this.props.style}>
+				<Cloudy />
 				{rainWaves}
-			</Animated.View>
+			</View>
 		)
 	}
 }

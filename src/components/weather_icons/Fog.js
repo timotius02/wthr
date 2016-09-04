@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   StyleSheet,
-  Animated,
+  Text,
   Platform
 } from 'react-native';
 
@@ -11,16 +11,15 @@ export default function Fog(props) {
   const cloudStyle = [styles.cloud, props.style];
 
   return (
-    <Animated.Text style={ cloudStyle } > 
+    <Text style={ cloudStyle } > 
       {icon('fog')}
-    </Animated.Text>
+    </Text>
   )
 }
 
 const styles = StyleSheet.create({
   cloud: {
-    left: 40,
-    fontSize: 110,
+    fontSize: 100,
     color: '#fff',
     backgroundColor: 'rgba(0,0,0,0)',
     fontFamily: Platform.OS === 'ios' ? 'Weather Icons' : 'weathericons',

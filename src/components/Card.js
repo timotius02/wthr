@@ -42,25 +42,25 @@ export default class Card extends Component {
   _weatherAnimation(weather) {
     switch(weather) {
       case 'clear-day':
-        return <Sun />;
+        return <Sun style={{top: -40}}/>;
       case 'clear-night':
-        return <ClearNight />;
+        return <ClearNight style={{top: -40}}/>;
       case 'rain':
-        return <Rain />;
+        return <Rain style={{top: -40}}/>;
       case 'snow':
-        return <Snow />;
+        return <Snow style={{top: -40}}/>;
       case 'sleet':
-        return <Sleet />;
+        return <Sleet style={{top: -40}}/>;
       case 'wind':
-        return <Wind />;
+        return <Wind style={{top: -40}}/>;
       case 'fog':
-        return <Fog />;
+        return <Fog style={{top: -40}}/>;
       case 'cloudy':
-        return  <Cloudy style={{left: 40}}/>;
+        return  <Cloudy style={{top: -40}}/>;
       case 'partly-cloudy-day':
-        return <PartlyCloudyDay />;
+        return <PartlyCloudyDay style={{top: -40}}/>;
       case 'partly-cloudy-night':
-        return <PartlyCloudyNight />;
+        return <PartlyCloudyNight style={{top: -40}}/>;
       default: 
         return null;
 
@@ -83,8 +83,8 @@ export default class Card extends Component {
     const backgroundColor = color[time];
 
     // TEMPORARY
-    const weathers = ['clear-day', 'clear-night', 'rain', 'snow', 'sleet', 'wind', 'fog', 'cloudy', 'partly-cloudy-day', 'partly-cloudy-night'];
-    const weather = weathers[Math.floor( Math.random() * 10)];
+    // const weathers = ['clear-day', 'clear-night', 'rain', 'snow', 'sleet', 'wind', 'fog', 'cloudy', 'partly-cloudy-day', 'partly-cloudy-night'];
+    // const weather = weathers[Math.floor( Math.random() * 10)];
 
 
     const viewStyle = [styles.viewStyleBase, {backgroundColor}];
@@ -102,6 +102,8 @@ export default class Card extends Component {
     });
 
     const flex = isSelected? 8 : 3;
+    
+    console.log(icon);
 
     return (
       <View 
@@ -111,7 +113,7 @@ export default class Card extends Component {
           background={TouchableNativeFeedback.SelectableBackground()}>
           <View style={viewStyle}>
             <View style={styles.halfView}>
-              <Animated.View style={{top}}>
+              <Animated.View style={{top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
                 { isSelected ? this._weatherAnimation(icon) : null}
               </Animated.View>
             </View>

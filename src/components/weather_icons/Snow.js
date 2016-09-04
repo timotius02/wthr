@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
 	StyleSheet,
 	Animated,
+	View,
 	Easing,
 	Platform
 } from 'react-native';
@@ -10,8 +11,8 @@ import Cloudy from './Cloudy';
 
 const icon = require('react-native-iconic-font/weathericons');
 
-const leftMin = 45;
-const leftMax = 120;
+const leftMin = 0;
+const leftMax = 85;
 
 const topMin = 100;
 const topMax = 200;
@@ -39,7 +40,6 @@ export default class Snow extends Component {
 		}
 
 		this.state = {
-			top: new Animated.Value(0),
 			snow
 		}
 	}
@@ -108,8 +108,7 @@ export default class Snow extends Component {
 	}
 	
 	render() {
-		const { style } = this.props;
-		const { top, snow } = this.state;
+		const { snow } = this.state;
 
 		const snowWaves = snow.map((wave, index) => {
 			const { left, top, translateX, animationState } = wave;
@@ -135,11 +134,11 @@ export default class Snow extends Component {
 		})
 
 		return (
-			<Animated.View style={[style, { top }]}>
-				<Cloudy style={{left: 40}}/>
+			<View style={this.props.style}>
+				<Cloudy />
 
 				{ snowWaves }
-			</Animated.View>
+			</View>
 		)
 	}
 }

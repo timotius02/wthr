@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
 		fontSize: 70,
 		color: '#fff',
 		backgroundColor: 'rgba(0,0,0,0)',
-		position: 'absolute',
 		fontFamily: Platform.OS === 'ios' ? 'Weather Icons' : 'weathericons',
 	}
 }) 
