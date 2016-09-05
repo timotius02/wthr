@@ -5,6 +5,8 @@ import {
   View,
 } from 'react-native';
 
+import Style from '../stylesheets/Style';
+
 export default class WeatherInfo extends Component {
   constructor(props) {
     super(props);
@@ -28,12 +30,12 @@ const styles = StyleSheet.create({
   summary: {
     paddingBottom: 10,
     color: '#fff',
-    fontSize: 32,
+    fontSize: Style.em(2),
     fontWeight: '500'
   },
   text: {
     color: '#fff',
     fontWeight: '500',
-    fontSize: 16
+    fontSize: Style.em(1)
   }
 });

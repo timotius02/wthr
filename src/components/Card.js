@@ -7,6 +7,8 @@ import {
   TouchableNativeFeedback, // Android Specific
 } from 'react-native';
 
+import Style from '../stylesheets/Style';
+
 import { 
   ClearNight,
   Cloudy,
@@ -22,14 +24,6 @@ import {
 
 import WeatherInfo from './WeatherInfo';
 
-const color = {
-  base: '#8ba892',
-  morning: '#e3bb88',
-  afternoon: '#d89864',
-  evening: '#b1695a',
-  night: '#644749'
-}
-
 export default class Card extends Component {
   constructor(props) {
     super(props)
@@ -42,25 +36,25 @@ export default class Card extends Component {
   _weatherAnimation(weather) {
     switch(weather) {
       case 'clear-day':
-        return <Sun style={{top: -40}}/>;
+        return <Sun style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'clear-night':
-        return <ClearNight style={{top: -40}}/>;
+        return <ClearNight style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'rain':
-        return <Rain style={{top: -40}}/>;
+        return <Rain style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'snow':
-        return <Snow style={{top: -40}}/>;
+        return <Snow style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'sleet':
-        return <Sleet style={{top: -40}}/>;
+        return <Sleet style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'wind':
-        return <Wind style={{top: -40}}/>;
+        return <Wind style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'fog':
-        return <Fog style={{top: -40}}/>;
+        return <Fog style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'cloudy':
-        return  <Cloudy style={{top: -40}}/>;
+        return  <Cloudy style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'partly-cloudy-day':
-        return <PartlyCloudyDay style={{top: -40}}/>;
+        return <PartlyCloudyDay style={{top: -Style.HEIGHT_UNIT}}/>;
       case 'partly-cloudy-night':
-        return <PartlyCloudyNight style={{top: -40}}/>;
+        return <PartlyCloudyNight style={{top: -Style.HEIGHT_UNIT}}/>;
       default: 
         return null;
 
@@ -76,11 +70,20 @@ export default class Card extends Component {
       //   return null;
     }
   }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.isSelected === this.props.isSelected &&
+        nextProps.show === this.props.show) {
+      return false;
+    }
+    return true;
+  } 
+
   render() {
-    const { time, temperature, onPress, isSelected, icon, ...other } = this.props;
+    const { time, temperature, onPress, isSelected, icon, show, ...other } = this.props;
 
 
-    const backgroundColor = color[time];
+    const backgroundColor = Style.COLORS[time];
 
     // TEMPORARY
     // const weathers = ['clear-day', 'clear-night', 'rain', 'snow', 'sleet', 'wind', 'fog', 'cloudy', 'partly-cloudy-day', 'partly-cloudy-night'];
@@ -103,9 +106,8 @@ export default class Card extends Component {
 
     const flex = isSelected? 8 : 3;
     
-    console.log(icon);
 
-    return (
+    return this.props.show ? (
       <View 
         style={{flex }}>
         <TouchableNativeFeedback 
@@ -127,7 +129,7 @@ export default class Card extends Component {
           </View>
         </TouchableNativeFeedback>
       </View>
-    )
+    ) : null;
   }
 }
 
@@ -145,11 +147,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     opacity: 0.4, 
     fontWeight: '700',
-    fontSize: 20
+    fontSize: Style.em(1.5)
   },
   degree: {
     color: '#fff',
-    fontSize: 38,
+    fontSize: Style.em(2.5),
     paddingBottom: 10
   },
 });

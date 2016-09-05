@@ -6,6 +6,7 @@ export const UPDATE_LOCATION = 'UPDATE_LOCATION';
 export const LOCATION_ERROR = 'LOCATION_ERROR';
 export const RECEIVED_WEATHER = 'RECEIVED_WEATHER';
 export const SET_SELECTED_TIME = 'SET_SELECTED_TIME';
+export const TOGGLE = 'TOGGLE';
 
 export function openMenu() {
   return {
@@ -88,6 +89,13 @@ export function fetchWeather(times) {
       .catch((error) => {
         console.log(error);
       })
+  }
+}
+
+export function toggle(time) {
+  return {
+    type: 'TOGGLE',
+    time
   }
 }
 

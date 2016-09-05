@@ -39,6 +39,7 @@ export default {
   RATIO_Y: ratioY,
   UNIT: em(1),
   PADDING: em(1.25),
+  em,
 
   // App specific Height Unit
   HEIGHT_UNIT: y / 18,

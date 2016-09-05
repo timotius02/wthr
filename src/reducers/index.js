@@ -4,7 +4,8 @@ import {
   UPDATE_LOCATION,
   LOCATION_ERROR,
   RECEIVED_WEATHER,
-  SET_SELECTED_TIME
+  SET_SELECTED_TIME,
+  TOGGLE
 } from '../actions';
 
 var morningTime = '9:00 am';
@@ -41,7 +42,8 @@ const initialState = {
   selected,
   times: {
     morning: {
-      time: morningDate.getTime() / 1000,
+      show: true,
+      unixtime: morningDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -49,7 +51,8 @@ const initialState = {
       humidity: 0.91 
     },
     afternoon: {
-      time: afternoonDate.getTime() / 1000,
+      show: true,
+      unixtime: afternoonDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -57,7 +60,8 @@ const initialState = {
       humidity: 0.91 
     },
     evening: {
-      time: eveningDate.getTime() / 1000,
+      show: true,
+      unixtime: eveningDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -65,7 +69,8 @@ const initialState = {
       humidity: 0.91 
     },
     night: {
-      time: nightDate.getTime() / 1000,
+      show: true,
+      unixtime: nightDate.getTime() / 1000,
       temperature: 0,
       summary: 'Sunny',
       icon: 'clear-day',
@@ -114,19 +119,19 @@ export default function rootReducer(state = initialState, action) {
         loading: false,
         times: {
           morning: {
-            time: state.times.morning.time,
+            ...state.times.morning,
             ...morning
           },
           afternoon: {
-            time: state.times.afternoon.time,
+            ...state.times.afternoon,
             ...afternoon
           },
           evening: {
-            time: state.times.evening.time,
+            ...state.times.evening,
             ...evening
           },
           night: {
-            time: state.times.night.time,
+            ...state.times.night,
             ...night
           }
         }
@@ -136,6 +141,20 @@ export default function rootReducer(state = initialState, action) {
       return {
         ...state,
         selected: action.selected
+      }
+    }
+    case TOGGLE: {
+      const { time } = action;
+
+      return {
+        ...state,
+        times: {
+          ...state.times,
+          [time]: {
+            ...state.times[time],
+            show: !state.times[time].show
+          }
+        }
       }
     }
     default:

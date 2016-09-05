@@ -56,9 +56,8 @@ class WeatherApp extends Component {
   
   componentDidMount() {
     const { morning, afternoon, evening, night } = this.props.times;
-    const times = [ morning.time, afternoon.time, evening.time, night.time];
+    const times = [ morning.unixtime, afternoon.unixtime, evening.unixtime, night.unixtime];
 
-        console.log(times);
     this.props.fetchWeather(times);
   }
   _onPressTime(timeSelected) {

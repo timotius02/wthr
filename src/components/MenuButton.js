@@ -7,10 +7,12 @@ import {
   Animated,
   PanResponder,
   Easing,
-  Platform
+  Platform,
+  Switch,
+  View
 } from 'react-native';
 
-import { openMenu, closeMenu } from '../actions'; 
+import { openMenu, closeMenu, toggle } from '../actions'; 
 
 import Style from '../stylesheets/Style';
 
@@ -21,7 +23,7 @@ export default class MenuButton extends Component {
     super(props)
 
     this._minHeight = Style.HEIGHT_UNIT;
-    this._maxHeight = 200;
+    this._maxHeight = Style.HEIGHT_UNIT * 8;
 
     this.state = {
       height: new Animated.Value(this._minHeight)
@@ -91,12 +93,16 @@ export default class MenuButton extends Component {
       this.close()
     }
   }
+  _switch(time) {
+    this.props.toggle(time);
+  }
   render() {
     // DOn't allow user to pull tab above or below limit
     let height = this.state.height.interpolate({
       inputRange: [this._minHeight - 1, this._minHeight, this._maxHeight, this._maxHeight + 1],
       outputRange: [this._minHeight, this._minHeight, this._maxHeight, this._maxHeight]
     })
+    
 
     return (
       <Animated.View 
@@ -104,7 +110,30 @@ export default class MenuButton extends Component {
         style={{height}}
         onLayout={this._newPanHandler.bind(this)}>
         {this.props.isMenuOpen ? 
-          null :
+          <View style={styles.menu}>
+            <Text style={styles.title}>OPTIONS</Text>
+            <View style={styles.row}>
+              <Text style={styles.text}>MORNING</Text>
+              <Switch value={this.props.showMorning} 
+              onValueChange={this._switch.bind(this, 'morning')}/>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.text}>AFTERNOON</Text>
+              <Switch value={this.props.showAfternoon} 
+              onValueChange={this._switch.bind(this, 'afternoon')}/>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.text}>EVENING</Text>
+              <Switch value={this.props.showEvening}
+              onValueChange={this._switch.bind(this, 'evening')}/>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.text}>NIGHT</Text>
+              <Switch value={this.props.showNight}
+              onValueChange={this._switch.bind(this, 'night')}/>
+            </View>
+
+          </View>:
           <Text style={styles.icon}>
             {icon('drag_handle')}
           </Text> 
@@ -115,27 +144,53 @@ export default class MenuButton extends Component {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    fontWeight: '700',
+    fontSize: Style.FONT_SIZE_TITLE,
+    color: '#fff',
+    textAlign: 'center',
+    paddingBottom: Style.PADDING / 2
+  },
+  text: {
+    fontWeight: '700',
+    fontSize: Style.UNIT,
+    color: '#fff',
+    opacity: 0.7
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: Style.PADDING / 2
+  },
+  menu: {
+    padding: Style.PADDING * 2,
+  },
   icon: {
     fontFamily: Platform.OS === 'ios' ? 'Material Icons' : 'materialicons',
-    fontSize: 33,
+    fontSize: Style.em(2.5),
     color: '#fff',
     opacity: 0.5, 
     textAlign: 'right',
-    paddingRight: 10
+    paddingRight: Style.UNIT
   },
 })
 
 function mapStateToProps(state) {
-  const { isMenuOpen } = state;
+  const { isMenuOpen, times } = state;
   return {
-    isMenuOpen
+    isMenuOpen,
+    showMorning: times.morning.show,
+    showAfternoon: times.afternoon.show,
+    showEvening: times.evening.show,
+    showNight: times.night.show
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     openMenu: bindActionCreators(openMenu, dispatch),
-    closeMenu: bindActionCreators(closeMenu, dispatch)
+    closeMenu: bindActionCreators(closeMenu, dispatch),
+    toggle: bindActionCreators(toggle, dispatch)
   }
 }
 
