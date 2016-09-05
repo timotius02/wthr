@@ -39,9 +39,9 @@ export default class MenuButton extends Component {
     this._panResponder = PanResponder.create({
       // Ask to be the responder:
       onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: (e, gestureState) => {
+        return Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && Math.abs(gestureState.dy) > 8;
+      },
 
       onPanResponderGrant: () => {
           this.state.height.setOffset(this.state.height._value);
@@ -50,7 +50,6 @@ export default class MenuButton extends Component {
       onPanResponderMove: Animated.event([
           null, {dy: this.state.height}
         ]),
-      onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: () => {
         this.state.height.flattenOffset();
 
@@ -94,6 +93,7 @@ export default class MenuButton extends Component {
     }
   }
   _switch(time) {
+    // console.log('switch' + time);
     this.props.toggle(time);
   }
   render() {

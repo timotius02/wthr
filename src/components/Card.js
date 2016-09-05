@@ -95,13 +95,13 @@ export default class Card extends Component {
         // Weather animation slide down
     const top = this.props.animationState.interpolate({
       inputRange: [0, 1],
-      outputRange: [-350, -10]
+      outputRange: [-Style.DEVICE_HEIGHT, -10]
     });
 
     // weather info slide up
     const bottom = this.props.animationState.interpolate({
       inputRange: [0, 1],
-      outputRange: [-180, 0]
+      outputRange: [-Style.DEVICE_HEIGHT, 0]
     });
 
     const flex = isSelected? 8 : 3;
